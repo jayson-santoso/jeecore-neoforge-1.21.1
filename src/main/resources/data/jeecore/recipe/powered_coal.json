@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "TRT",
+    "R R",
+    "TRT"
+  ],
+  "key": {
+    "T": {
+      "item": "jeecore:refined_coal"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "result": {
+    "id": "jeecore:powered_coal",
+    "count": 1
+  }
+}

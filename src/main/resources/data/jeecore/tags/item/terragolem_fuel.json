@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:coal",
+    "minecraft:charcoal",
+    "jeecore:refined_coal",
+    "jeecore:powered_coal"
+  ]
+}

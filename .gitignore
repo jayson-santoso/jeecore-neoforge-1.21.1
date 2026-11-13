@@ -38,3 +38,37 @@ run/
 **/src/generated/**/.cache/
 repo/
 !**/src/**/repo/
+
+### Local runtime environments ###
+/runs/
+/run2/
+/logs/
+
+### Local tests (temporarily excluded from version control) ###
+/src/test/
+/src/regression/
+/src/gameTest/
+
+### Environment files ###
+.env
+.env.*
+!.env.example
+
+### Python asset tools ###
+__pycache__/
+*.py[cod]
+.venv/
+
+### Logs and JVM diagnostics ###
+*.log
+/crash-reports/
+hs_err_pid*
+replay_pid*
+*.hprof
+*.jfr
+
+### Editor and Windows temporary files ###
+*.swp
+*.swo
+Thumbs.db
+Desktop.ini

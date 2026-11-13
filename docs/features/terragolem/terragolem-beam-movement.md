@@ -1,0 +1,13 @@
+# Terragolem beam movement
+
+During ready-up, walking is reduced to 5% of its ordinary speed while normal vertical jumping and falling remain possible. Directional and jump inputs are preserved. Client and server movement/jump hooks cap horizontal velocity at 0.02 blocks/tick (0.4 blocks/second), preserving slower motion and the intended direction. Sprinting is disabled during charge. The restriction ends when charging ends. Held-beam and recovery/timeout stun rules retain their existing behavior.
+
+Only a player who is currently airborne from an actual player jump receives the aimed movement boost. The client reports its actual local jump action before vanilla movement; the server accepts that intent only for a living, grounded Terragolem, then requires it to be airborne before applying the boost. This avoids relying on vanilla's server-side inferred jump event, which can also accompany upward knockback. Landing, cancelled jump intent, water/lava, flying, elytra, mounting, death, logout, dimension changes, and lifecycle resets clear eligibility.
+
+For jump flights, left-click burst recoil follows the full opposite look vector, including pitch: 0.7 blocks/tick for 1–2 segments, 1.0 for 3–4, and 1.3 for 5–6. Downward aim launches upward; upward aim recoils downward. Grounded shots, ledge falls, and other non-jump airborne states retain the original recoil: horizontal force opposite facing of 0.6 / 1.0 / 1.5, plus an upward kick of 0.2 times that strength. Sneaking suppresses either recoil impulse while still firing the beam. Existing momentum and ordinary Minecraft collision, drag, gravity, and subsequent fall damage remain. Charge ends before recoil, so its horizontal speed cap cannot cancel the impulse. Recovery does not erase recoil momentum.
+
+Block impact smoke matches `/particle minecraft:campfire_cosy_smoke ~ ~ ~ .3 .3 .3 0.2 4`: four particles, spread 0.3 on each axis, speed 0.2. Sustained beams emit this puff every eight ticks while hitting a block; a block-stopped burst emits one puff. The source is offset 0.06 blocks outside the impacted face. Misses and entity-stopped burst hits do not emit block smoke.
+
+Headless checks cover exact smoke values, jumping/sprint-jump restraint, small nonzero shuffle movement and directional input, charge cancellation, jump-only 3D recoil, sneak suppression, native post-release movement, original grounded recoil, non-jump falling/knockback recoil, and clearing jump eligibility on landing. Client input feel, visual smoke density, and multiplayer latency require graphical playtesting.
+
+Gradle build, the Infernal regression checks, and all 41 required GameTests passed.

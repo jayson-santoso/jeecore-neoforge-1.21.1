@@ -1,0 +1,9 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.sonflowers.jeecore.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": ["FoodDataMixin", "MobNoAiMixin", "ServerPlayerGameModeMixin", "WindrunnerMovementMixin"],
+  "client": ["client.TerragolemFoodHudMixin", "client.OverheatedShiveringMixin", "client.NimbleEffectNameMixin"],
+  "injectors": { "defaultRequire": 1 }
+}
