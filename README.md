@@ -1,5 +1,5 @@
 # JeeCore
-JeeCore is a multiplayer-focused Minecraft 1.21.1 mod built with NeoForge and Java 21. Your adventure begins by choosing an RPG-style starting gene, complete a set of unique abilities, strengths, and of course a few weaknesses to keep you humble. But worry not, your friends might be equipped with abilities to cover your shortcomings (provided they aren’t too busy dealing with their own). With these complementary classes and diverse playstyles, a little teamwork can go a long way.
+JeeCore is a multiplayer-focused Minecraft 1.21.1 mod built with NeoForge and Java 21. Your adventure begins by choosing an RPG-style starting gene, equipped with a set of unique abilities, strengths, and of course a few weaknesses to keep you humble. But worry not, your friends might be equipped with abilities to cover your shortcomings (provided they aren’t too busy dealing with their own). With these complementary classes and diverse playstyles, a little teamwork can go a long way.
 
 ## Getting started
 
