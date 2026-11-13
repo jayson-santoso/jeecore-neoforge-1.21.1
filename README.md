@@ -1,7 +1,5 @@
 # JeeCore
-
-A Minecraft 1.21.1 mod for Jee's Pack, built with NeoForge and Java 21.
-Gameplay is organized around four genes: Dryad, Infernal, Nimbus, and Terragolem.
+JeeCore is a multiplayer-focused Minecraft 1.21.1 mod built with NeoForge and Java 21. Your adventure begins by choosing an RPG-style starting gene, complete a set of unique abilities, strengths, and of course a few weaknesses to keep you humble. But worry not, your friends might be equipped with abilities to cover your shortcomings (provided they aren’t too busy dealing with their own). With these complementary classes and diverse playstyles, a little teamwork can go a long way.
 
 ## Getting started
 
@@ -50,19 +48,6 @@ in client code; some existing shared state and payload handlers need care during
 `gradle.properties` holds mod identity and version settings. `.github/workflows/`
 contains CI. Generated output and caches live in `build/` and `.gradle/`.
 Keep Minecraft's resource directory conventions when adding assets or data.
-
-## Local tests
-
-Tests are temporarily ignored by Git and kept outside the published mod jar:
-
-- `src/regression/java/`: standalone regression checks. Run with `./gradlew check`.
-- `src/gameTest/java/` and `src/gameTest/resources/`: Minecraft integration tests.
-  Run with `./scripts/run-gametests.ps1` after dependencies are cached (the launcher uses offline mode).
-- `check` runs available regression checks and compiles GameTests; it does not execute GameTests.
-
-A fresh checkout has no test sources; regression tasks skip when their sources are
-absent. Running GameTests requires the local test files. Runtime directories are
-`runs/client/`, `runs/client2/`, `runs/server/`, `runs/data/`, and `runs/gametest/`.
 
 See [feature notes](docs/features/) and [artwork instructions](artwork/README.md)
 for design context and asset rebuilding. `TEMPLATE_LICENSE.txt` retains the
