@@ -8,7 +8,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.sonflowers.jeecore.JeeCore;
-import net.sonflowers.jeecore.gene.nimbus.network.ToggleGlidePayload;
 import net.sonflowers.jeecore.core.network.UseAbilityPayload;
 import net.sonflowers.jeecore.core.gene.Gene;
 import net.sonflowers.jeecore.core.gene.GeneHelper;
@@ -46,8 +45,6 @@ public class ClientSetup {
             if (net.sonflowers.jeecore.core.gene.GeneHelper.getPlayerGene(event.getEntity())
                     == net.sonflowers.jeecore.core.gene.Gene.TERRAGOLEM) {
                 PacketDistributor.sendToServer(new net.sonflowers.jeecore.gene.terragolem.network.OpenTerragolemRepairMenuPayload());
-            } else {
-                PacketDistributor.sendToServer(new ToggleGlidePayload());
             }
         }
     }

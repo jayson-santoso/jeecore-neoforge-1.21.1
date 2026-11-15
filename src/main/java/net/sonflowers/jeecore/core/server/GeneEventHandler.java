@@ -32,7 +32,6 @@ import net.sonflowers.jeecore.gene.infernal.server.InfernalPassiveHandler;
 import net.sonflowers.jeecore.gene.infernal.server.InfernalRageManager;
 import net.sonflowers.jeecore.gene.infernal.server.InfernalSmokeManager;
 import net.sonflowers.jeecore.gene.infernal.server.RageManager;
-import net.sonflowers.jeecore.gene.nimbus.server.NimbusGlideManager;
 import net.sonflowers.jeecore.gene.nimbus.server.NimbusPassiveHandler;
 import net.sonflowers.jeecore.gene.terragolem.server.TerragolemPassiveHandler;
 import net.sonflowers.jeecore.core.network.OpenGeneScreenPayload;
@@ -67,7 +66,6 @@ public class GeneEventHandler {
         if (event.isWasDeath() && newData.getGene() == Gene.TERRAGOLEM) {
             net.sonflowers.jeecore.gene.terragolem.server.TerragolemOverheatManager.clearHeat(event.getEntity());
         }
-        newData.setGlideToggled(false);
         newData.setSmokeFormActive(false);
         newData.setIgnitionCharge(0);
         newData.setIgnitionTimer(0);
@@ -140,11 +138,10 @@ public class GeneEventHandler {
     }
 
     private static void applyGeneState(ServerPlayer player) {
+        NimbusPassiveHandler.removeLegacyFlightModifier(player);
         Gene gene = GeneHelper.getPlayerGene(player);
         if (gene == Gene.NIMBUS) {
             NimbusPassiveHandler.applyPassiveAttributes(player);
-            NimbusGlideManager.applyGlideAttribute(player);
-            NimbusGlideManager.setGlideResource(player, NimbusGlideManager.getGlideResource(player));
         } else if (gene == Gene.INFERNAL) {
             InfernalPassiveHandler.applyPassiveAttributes(player);
             InfernalSmokeManager.removeSmokeForm(player);
@@ -278,14 +275,6 @@ public class GeneEventHandler {
             return;
         }
 
-        // Prevent firework usage when Nimbus is gliding.
-        if (GeneHelper.getPlayerGene(player) == Gene.NIMBUS) {
-            if (player.isFallFlying() && NimbusGlideManager.isGlideToggled(player)) {
-                if (event.getItemStack().is(Items.FIREWORK_ROCKET)) {
-                    event.setCanceled(true);
-                }
-            }
-        }
     }
 
     @SubscribeEvent

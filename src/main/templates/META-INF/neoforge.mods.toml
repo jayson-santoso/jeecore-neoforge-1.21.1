@@ -32,10 +32,3 @@ config="${mod_id}.mixins.json"
     versionRange="${minecraft_version_range}"
     ordering="NONE"
     side="BOTH"
-
-[[dependencies.${mod_id}]]
-    modId="caelus"
-    type="required"
-    versionRange="[7.0.0,)"
-    ordering="AFTER"
-    side="BOTH"

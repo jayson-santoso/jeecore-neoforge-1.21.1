@@ -5,17 +5,17 @@ package net.sonflowers.jeecore.gene.nimbus;
  * world access.
  */
 public final class WindrunnerMomentum {
+    public static final int DODGE_PROTECTION_TICKS = 24;
     public enum Movement { SPRINT, WALK, IDLE, SNEAK, EXCLUDED }
     private float momentum;
     private int stage;
     private boolean decaying;
     private long lastAttack = -1000, disruptedUntil = -1000;
-    private long nextDodge = -1000, cloudUntil = -1000;
+    private long cloudUntil = -1000;
 
     public float momentum() { return momentum; }
     public int stage() { return stage; }
     public boolean decaying() { return decaying && momentum > 0; }
-    public float dodgeChance() { return switch (stage) { case 1 -> .30f; case 2 -> .50f; case 3 -> .60f; default -> 0; }; }
     public boolean dodging(long now) { return now < cloudUntil; }
 
     public void add(float amount) {
@@ -41,10 +41,14 @@ public final class WindrunnerMomentum {
         add(-10);
     }
 
-    public boolean tryDodge(long now, float roll) {
-        if (stage == 0 || now < nextDodge || roll >= dodgeChance()) return false;
-        nextDodge = now + 20;
-        cloudUntil = now + 10;
+    public boolean tryDodge(long now) {
+        if (dodging(now) || stage == 0) return false;
+        stage--;
+        // Spend the banked stage and its partial progress/reserve, guaranteeing exactly one demotion.
+        // Even a full 100-point Nimble III grants three dodges, never a hidden fourth charge.
+        momentum = stage * 25;
+        decaying = true;
+        cloudUntil = now + DODGE_PROTECTION_TICKS;
         return true;
     }
 

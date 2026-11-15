@@ -9,8 +9,6 @@ import net.sonflowers.jeecore.gene.infernal.client.RageRenderer;
 import net.sonflowers.jeecore.gene.infernal.client.SmokeExitRenderer;
 import net.sonflowers.jeecore.gene.infernal.client.SmokeRenderer;
 import net.sonflowers.jeecore.gene.nimbus.client.CloudRenderer;
-import net.sonflowers.jeecore.gene.nimbus.client.GlideBoostRenderer;
-import net.sonflowers.jeecore.gene.nimbus.client.GlideTrailRenderer;
 import net.sonflowers.jeecore.gene.nimbus.client.WindRenderer;
 import net.sonflowers.jeecore.gene.terragolem.client.TerragolemBurstRenderer;
 import net.sonflowers.jeecore.gene.terragolem.client.TerragolemReadyUpRenderer;
@@ -59,7 +57,6 @@ public class BeamRenderer {
     private static final List<Player> RAGING_PLAYERS = new ArrayList<>();
     private static final List<Player> SMOKING_PLAYERS = new ArrayList<>();
     private static final List<Player> CLOUDED_PLAYERS = new ArrayList<>();
-    private static final List<Player> GLIDING_PLAYERS = new ArrayList<>();
     private static final List<Player> POUNCING_PLAYERS = new ArrayList<>();
     private static final List<Player> READY_UP_PLAYERS = new ArrayList<>();
 
@@ -88,16 +85,7 @@ public class BeamRenderer {
             }
             if (WindRenderer.screenShakeIntensity < 0) WindRenderer.screenShakeIntensity = 0;
         }
-        if (GlideBoostRenderer.screenShakeIntensity > 0) {
-            float s = GlideBoostRenderer.screenShakeIntensity;
-            float power = s * s;
-            event.setPitch(event.getPitch() + (RANDOM.nextFloat() - 0.5f) * power * 18.0f);
-            event.setYaw(event.getYaw() + (RANDOM.nextFloat() - 0.5f) * power * 22.0f);
-            event.setRoll(event.getRoll() + (RANDOM.nextFloat() - 0.5f) * power * 16.0f);
-            GlideBoostRenderer.screenShakeIntensity *= 0.82f;
-            GlideBoostRenderer.screenShakeIntensity -= 0.012f;
-            if (GlideBoostRenderer.screenShakeIntensity < 0) GlideBoostRenderer.screenShakeIntensity = 0;
-        }
+
         if (InfernalChargeVfxRenderer.screenShakeIntensity > 0) {
             float s = InfernalChargeVfxRenderer.screenShakeIntensity;
             float power = s * s;
@@ -112,7 +100,7 @@ public class BeamRenderer {
 
     @SubscribeEvent
     public static void onComputeFov(ViewportEvent.ComputeFov event) {
-        event.setFOV(event.getFOV() * GlideBoostRenderer.getFovMultiplier() * InfernalAerialChargeRenderer.getFovMultiplier() * TerragolemReadyUpRenderer.getFovMultiplier()
+        event.setFOV(event.getFOV() * InfernalAerialChargeRenderer.getFovMultiplier() * TerragolemReadyUpRenderer.getFovMultiplier()
                 * net.sonflowers.jeecore.gene.nimbus.client.NimbusGustClient.getFovMultiplier(event.getPartialTick()));
     }
 
@@ -290,7 +278,6 @@ public class BeamRenderer {
         if (localPlayer == null) return;
         var level = mc.level;
         if (level == null) return;
-        GlideBoostRenderer.tickLocalState(localPlayer);
 
         WindRenderer.prune();
 
@@ -305,7 +292,6 @@ public class BeamRenderer {
         RAGING_PLAYERS.clear();
         SMOKING_PLAYERS.clear();
         CLOUDED_PLAYERS.clear();
-        GLIDING_PLAYERS.clear();
         POUNCING_PLAYERS.clear();
         READY_UP_PLAYERS.clear();
 
@@ -313,7 +299,6 @@ public class BeamRenderer {
                 || RageManager.hasRagingPlayers()
                 || SmokeManager.hasSmokingPlayers()
                 || CloudManager.hasCloudedPlayers()
-                || GlideBoostRenderer.hasBoostedPlayers()
                 || InfernalAerialChargeRenderer.isActive()
                 || TerragolemReadyUpRenderer.hasVisibleFlares();
         List<Player> nearbyPlayers = needsPlayerScan
@@ -334,9 +319,7 @@ public class BeamRenderer {
             if (CloudManager.isClouded(nearbyPlayer.getUUID())) {
                 CLOUDED_PLAYERS.add(nearbyPlayer);
             }
-            if (GlideTrailRenderer.shouldRenderTrail(nearbyPlayer)) {
-                GLIDING_PLAYERS.add(nearbyPlayer);
-            }
+
             if (pouncing) {
                 POUNCING_PLAYERS.add(nearbyPlayer);
             }
@@ -349,7 +332,6 @@ public class BeamRenderer {
         boolean anyoneIsRaging = !RAGING_PLAYERS.isEmpty();
         boolean anyoneIsSmoking = !SMOKING_PLAYERS.isEmpty();
         boolean anyoneIsClouded = !CLOUDED_PLAYERS.isEmpty();
-        boolean anyoneIsGliding = !GLIDING_PLAYERS.isEmpty();
         boolean anyoneIsPouncing = !POUNCING_PLAYERS.isEmpty();
         boolean anyoneIsReadyUp = !READY_UP_PLAYERS.isEmpty();
         boolean hasZones = !HealManager.getZones().isEmpty();
@@ -358,14 +340,13 @@ public class BeamRenderer {
                 || net.sonflowers.jeecore.gene.nimbus.client.NimbusGustChargeRenderer.hasEffects();
         boolean hasDryadElixirs = DryadElixirTrailRenderer.hasVisibleElixirs(level, localPlayer.getBoundingBox().inflate(130.0));
         boolean hasExistingParticles = SmokeRenderer.hasParticles() || CloudRenderer.hasParticles()
-                || GlideTrailRenderer.hasParticles() || GlideBoostRenderer.hasBursts()
                 || InfernalChargeVfxRenderer.hasBursts() || SmokeExitRenderer.hasParticles()
                 || DryadElixirTrailRenderer.hasParticles() || TerragolemBurstRenderer.hasBursts()
                 || InfernalAerialChargeRenderer.isActive() || InfernalAerialChargeRenderer.hasImpactEffects()
                 || RootSnareRenderer.hasEffects();
 
         if (!anyoneIsBeaming && !hasZones && !hasEndingHealZones && !hasWind && !anyoneIsRaging
-                && !anyoneIsSmoking && !anyoneIsClouded && !anyoneIsGliding && !anyoneIsPouncing
+                && !anyoneIsSmoking && !anyoneIsClouded && !anyoneIsPouncing
                 && !hasDryadElixirs && !hasExistingParticles && !anyoneIsReadyUp) return;
 
         float partialTick = event.getPartialTick().getGameTimeDeltaPartialTick(true);
@@ -419,9 +400,6 @@ public class BeamRenderer {
         for (Player entityPlayer : CLOUDED_PLAYERS) {
             CloudRenderer.spawnParticles(entityPlayer);
         }
-        for (Player entityPlayer : GLIDING_PLAYERS) {
-            GlideTrailRenderer.spawnParticles(entityPlayer);
-        }
 
         for (var entry : HealManager.getZones().entrySet()) {
             Vec3 visualPos = new Vec3(entry.getKey().getX() + 0.5, entry.getKey().getY(), entry.getKey().getZ() + 0.5);
@@ -439,7 +417,6 @@ public class BeamRenderer {
         }
 
         net.sonflowers.jeecore.gene.nimbus.client.NimbusGustChargeRenderer.render(buffer, matrix, camera, gameTime, partialTick);
-        GlideBoostRenderer.render(buffer, matrix, gameTime);
         DryadElixirTrailRenderer.render(level, camera, buffer, matrix, gameTime);
         InfernalChargeVfxRenderer.render(buffer, matrix, gameTime);
         TerragolemBurstRenderer.render(buffer, matrix, gameTime);
@@ -457,7 +434,6 @@ public class BeamRenderer {
         InfernalAerialChargeRenderer.render(poseStack, camera, partialTick);
         RootSnareRenderer.render(poseStack, camera, partialTick);
         CloudRenderer.render(poseStack, camera, partialTick);
-        GlideTrailRenderer.render(poseStack, camera);
 
         // Terragolem impact/muzzle smoke needs standard alpha blending; rendering it in the
         // additive beam pass would make the dark quads effectively invisible.

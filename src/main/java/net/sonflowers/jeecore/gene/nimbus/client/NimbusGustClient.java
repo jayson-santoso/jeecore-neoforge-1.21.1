@@ -122,7 +122,6 @@ public final class NimbusGustClient {
             keyHeld = charging = false;
             WindRenderer.BURSTS.clear();
             NimbusGustChargeRenderer.clear();
-            GlideBoostRenderer.clear();
             currentFov = transitionFrom = releasePeak = 1;
             transitionStart = -100;
             releaseJolt = false;

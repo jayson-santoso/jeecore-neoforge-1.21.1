@@ -24,8 +24,7 @@ public class DashOverlayRenderer implements LayeredDraw.Layer {
         Minecraft mc = Minecraft.getInstance();
         if (mc.options.hideGui) return;
         boolean smokeForm = mc.player != null && SmokeManager.isSmoking(mc.player.getUUID());
-        boolean glideBoost = GlideBoostRenderer.isLocalBoostActive();
-        if (!active && !smokeForm && !glideBoost) return;
+        if (!active && !smokeForm) return;
 
         int width = mc.getWindow().getGuiScaledWidth();
         int height = mc.getWindow().getGuiScaledHeight();
@@ -37,8 +36,6 @@ public class DashOverlayRenderer implements LayeredDraw.Layer {
 
         if (smokeForm) {
             RenderSystem.setShaderColor(1.0f, 0.52f, 0.08f, 0.24f);
-        } else if (glideBoost) {
-            RenderSystem.setShaderColor(0.88f, 0.97f, 1.0f, 0.13f);
         } else {
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 0.15f);
         }

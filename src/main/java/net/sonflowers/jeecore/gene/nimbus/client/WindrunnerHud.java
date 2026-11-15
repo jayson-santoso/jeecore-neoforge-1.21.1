@@ -111,7 +111,8 @@ public final class WindrunnerHud implements LayeredDraw.Layer {
         }
         if (mc.options.hideGui) return;
         float interpolation = 1 - (float)Math.exp(-.35 * Math.max(0, delta.getGameTimeDeltaTicks()));
-        displayed += (s.clientMomentum - displayed) * interpolation;
+        if (s.transition < 0 && displayed > s.clientMomentum) displayed = s.clientMomentum;
+        else displayed += (s.clientMomentum - displayed) * interpolation;
         int x = g.guiWidth() - 84, y = g.guiHeight() - 80;
         float flash = pulse(age, 10);
         for (int i = 0; i < 3; i++) {

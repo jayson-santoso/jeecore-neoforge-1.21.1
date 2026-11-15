@@ -13,10 +13,19 @@ import net.sonflowers.jeecore.core.gene.Gene;
 import net.sonflowers.jeecore.core.gene.GeneHelper;
 
 /**
- * Applies Nimbus attributes and per-tick passive behavior, delegating glide and airborne control
+ * Applies Nimbus attributes and per-tick passive behavior, delegating Windrunner and airborne control
  * to their managers.
  */
 public class NimbusPassiveHandler {
+    private static final ResourceLocation LEGACY_FLIGHT_MODIFIER = ResourceLocation.fromNamespaceAndPath(JeeCore.MOD_ID, "nimbus_glide");
+
+    /** Removes the obsolete saved flight permission, even if its optional attribute provider remains installed. */
+    public static void removeLegacyFlightModifier(Player player) {
+        net.minecraft.core.registries.BuiltInRegistries.ATTRIBUTE.holders().forEach(attribute -> {
+            AttributeInstance instance = player.getAttribute(attribute);
+            if (instance != null) instance.removeModifier(LEGACY_FLIGHT_MODIFIER);
+        });
+    }
     // Unique ResourceLocations for attribute modifiers.
     private static final ResourceLocation HEALTH_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(JeeCore.MOD_ID, "nimbus_health_reduction");
     private static final ResourceLocation AIR_SPEED_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath(JeeCore.MOD_ID, "nimbus_air_speed");
@@ -27,6 +36,7 @@ public class NimbusPassiveHandler {
      * Applies Nimbus health modifiers and removes conflicting fixed air-speed modifiers.
      */
     public static void applyPassiveAttributes(Player player) {
+        removeLegacyFlightModifier(player);
         // Reduce max health by 1 heart.
         AttributeInstance healthAttr = player.getAttribute(Attributes.MAX_HEALTH);
         if (healthAttr != null && healthAttr.getModifier(HEALTH_MODIFIER_ID) == null) {
@@ -46,6 +56,7 @@ public class NimbusPassiveHandler {
      * Removes Nimbus passive attribute modifiers when the gene is deselected.
      */
     public static void removePassiveAttributes(Player player) {
+        removeLegacyFlightModifier(player);
         NimbusWindrunnerManager.clear(player);
         AttributeInstance healthAttr = player.getAttribute(Attributes.MAX_HEALTH);
         if (healthAttr != null) {
@@ -59,7 +70,7 @@ public class NimbusPassiveHandler {
     }
 
     /**
-     * Updates server Nimbus passives, including glide, Windrunner, and sneaking slow fall.
+     * Updates server Nimbus passives, including Windrunner, and sneaking slow fall.
      */
     public static void tick(Player player) {
         if (GeneHelper.getPlayerGene(player) != Gene.NIMBUS) return;
@@ -70,8 +81,6 @@ public class NimbusPassiveHandler {
         // Apply slow falling effect when sneaking in air.
         handleSlowfall(player);
 
-        // Handle glide mechanics.
-        NimbusGlideManager.tick(player);
         NimbusWindrunnerManager.tick(player);
     }
 

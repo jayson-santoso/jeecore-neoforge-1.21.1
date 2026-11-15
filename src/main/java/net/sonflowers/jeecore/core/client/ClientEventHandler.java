@@ -3,7 +3,6 @@ package net.sonflowers.jeecore.core.client;
 import net.sonflowers.jeecore.gene.infernal.client.InfernalSmokeBarRenderer;
 import net.sonflowers.jeecore.gene.terragolem.client.TerragolemOverheatBarRenderer;
 import net.sonflowers.jeecore.gene.nimbus.client.DashOverlayRenderer;
-import net.sonflowers.jeecore.gene.nimbus.client.GlideBarRenderer;
 
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -38,9 +37,6 @@ public class ClientEventHandler {
         event.registerAboveAll(
             ResourceLocation.fromNamespaceAndPath(JeeCore.MOD_ID, "dash_overlay"), 
             new DashOverlayRenderer());
-        event.registerAboveAll(
-            ResourceLocation.fromNamespaceAndPath(JeeCore.MOD_ID, "glide_bar"),
-            new GlideBarRenderer());
         event.registerAboveAll(
             ResourceLocation.fromNamespaceAndPath(JeeCore.MOD_ID, "ability_cooldowns"),
             new AbilityCooldownRenderer());

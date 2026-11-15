@@ -2,7 +2,7 @@
 
 Use Nimbus in Survival. Start with a flat running area, then test with a zombie,
 skeleton, and creeper. Compare movement with the same sprint input and no other
-movement effects. Dodges are random: test repeated attacks at each stage.
+movement effects. Test repeated attacks both inside and after each 1.2-second dodge window.
 
 ## Simple momentum
 
@@ -15,9 +15,10 @@ movement effects. Dodges are random: test repeated attacks at each stage.
 - [ ] Sneaking drains it faster than stopping, even if still moving.
 - [ ] Sprinting into a wall or jumping in place cannot charge.
 - [ ] Returning to active sprinting rebuilds momentum.
-- [ ] Melee attacks, missed swings, and firing arrows reduce momentum.
-- [ ] Attacking briefly interrupts rebuilding, even while sprinting.
-- [ ] Taking damage does not remove momentum or interrupt sprint rebuilding.
+- [ ] Only successful damaging melee/projectile hits reduce momentum.
+- [ ] Empty arm swings, punching grass/blocks, missed attacks, and firing arrows without hitting are free.
+- [ ] Landed hits briefly interrupt rebuilding, even while sprinting; missed attacks do not.
+- [ ] Unprotected damage does not apply an extra momentum penalty; dodging spends one stage.
 - [ ] Multishot projectiles do not multiply one attack's momentum penalty.
 
 ## Nimble stages and ground speed
@@ -47,17 +48,33 @@ movement effects. Dodges are random: test repeated attacks at each stage.
 ## Dodge gameplay
 
 - [ ] Uncharged Nimbus cannot dodge.
-- [ ] I / II / III dodge approximately 30% / 50% / 60% of eligible hits over many attempts, with at least one second between hits.
+- [ ] Nimble I / II / III provide exactly 1 / 2 / 3 guaranteed dodges.
+- [ ] Hits separated by at least 1.2 seconds consume III -> II -> I -> uncharged.
+- [ ] Repeated hits inside the same 1.2-second window are nullified without spending extra charges or momentum.
+- [ ] Follow-up hits never restart or extend the window; the next hit at/after its end can spend another stage.
+- [ ] Starting from 100 momentum still grants only three dodge windows; attacks after the final window deal damage.
+- [ ] Each dodge immediately removes exactly one highlighted stage/bar and lowers the status effect amplifier.
 - [ ] Zombie melee hits can be dodged.
 - [ ] Skeleton arrows can be dodged.
 - [ ] Creeper explosions can be dodged, including their knockback.
 - [ ] Dodging a creeper does not protect surrounding blocks or other nearby entities.
-- [ ] Successful dodges preserve health and momentum.
-- [ ] Failed dodges deal normal damage while preserving momentum and the current dodge stage.
-- [ ] Another successful dodge cannot occur for one second.
-- [ ] Another hit can still damage you during the half-second cloud form; it is cosmetic.
+- [ ] Successful dodges preserve health while spending one Nimble stage and its partial progress.
+- [ ] Spending the final stage still protects for its full 1.2 seconds; afterward, attacks deal normal damage.
+- [ ] The next charge can trigger immediately when the previous window ends, without a probability roll.
+- [ ] Standing within zombie melee range does not spend multiple charges during one cloud-form window.
+- [ ] Sprinting rebuilds dodge charges as before.
 - [ ] Ownerless environmental damage does not trigger a dodge.
 - [ ] Self-inflicted damage does not trigger a dodge.
+
+## Removed glide system
+
+- [ ] Client and server start without Caelus installed.
+- [ ] Nimbus has no glide/recharge bar or glide toggle; the old toggle key does nothing for Nimbus.
+- [ ] Nimbus primary still dashes normally and never triggers the removed glide boost.
+- [ ] Equipped vanilla elytra and fireworks still work normally, with chest equipment rendered correctly.
+- [ ] Existing saves retain their gene and other resources; old flight permission is removed on login.
+- [ ] Gene changes, respawn, and dimension travel do not restore built-in flight or the old meter.
+- [ ] The shared toggle key still opens Terragolem's repair menu.
 
 ## Dodge visuals and sound
 
@@ -65,30 +82,48 @@ movement effects. Dodges are random: test repeated attacks at each stage.
 - [ ] Dodging no longer emits the old cloud-particle spray from the feet.
 - [ ] In third person, the body briefly becomes a pale cloud silhouette.
 - [ ] Three humanoid cloud afterimages appear behind the dodge position and fade quickly.
-- [ ] The normal player body and hands return after about half a second.
-- [ ] First person stays clear while sound communicates the dodge.
+- [ ] The normal player body and hands return after about 1.2 seconds, matching the protection window.
+- [ ] First person hides the body/echoes while showing low sprite smoke and playing the dodge sound.
+- [ ] Each dodge emits four cloudburst sprites: a mirrored forward/backward pair on each side, forming a butterfly-wing alignment from the feet.
+- [ ] Facing north/south emits east/west; facing east/west emits north/south, including when moving in another direction.
+- [ ] Dodge wings tilt outward 60 degrees from the ground, with wider faint overlays, slight mirrored forward/backward slides, and original untinted colors.
+- [ ] Dodge smoke plays 25% faster and fades over about 1.76 seconds; the cloud body ends after 1.2 seconds.
+- [ ] Follow-up protected hits do not replay the dodge sound, sprites, cloud form, or HUD demotion.
+- [ ] Spending the final Nimble stage still shows the full sprite fade; subsequent dodges emit separate four-wing bursts.
+- [ ] Nearby observers see the same sideways bursts; death and changing worlds clear the effect.
 - [ ] Dodging does not teleport you or apply an Invisibility potion.
 - [ ] Dash visuals still work correctly immediately before or after a dodge.
 
-## Flowing foot-streak trail
+## Sprite-based angled foot trails
 
-- [ ] The passive humanoid afterimages are gone; Nimble produces long wispy streaks from both feet.
-- [ ] Trails consist of connected, crisp pixel-like sections with no visible gaps between them.
-- [ ] Segments nearest the feet are the thickest and brightest.
-- [ ] Thick sections occupy most of the trail (40% at 3x, then 25% at 1.5x), with a short thin taper at the end.
-- [ ] Corners and thickness transitions stay connected while the tail remains thin and transparent.
-- [ ] The streaks ripple gently rather than looking like rigid straight lines.
-- [ ] Running and jumping both leave foot wisps along the actual route.
-- [ ] Turning bends the trail smoothly instead of rotating the whole trail with the camera.
-- [ ] II has longer and slightly thicker streaks than I; III has the longest, thickest strokes.
-- [ ] Stopping ends new emission; remaining wisps taper and fade within roughly 1.0–1.4 seconds.
-- [ ] Resuming movement does not draw a sharp connector across a pause.
-- [ ] Merely turning in place does not generate wisps.
-- [ ] Dash, glide, and dodge cloud form do not emit overlapping new foot trails.
-- [ ] Looking down in first person shows foot-level wisps without a body silhouette blocking the view.
-- [ ] Losing Nimble or changing genes clears the trail and promotion smoke.
-- [ ] Teleports and dimension changes do not draw a streak across the world.
-- [ ] The trail remains consistent at different frame rates.
+- [ ] The supplied wind sprite is visible instead of the old solid procedural strokes.
+- [ ] The sprite background is transparent; no black rectangle surrounds it.
+- [ ] Pixel edges stay sharp without blurred texture filtering or neighboring-frame bleed.
+- [ ] The seven poses cycle forward without a back-and-forth ripple animation.
+- [ ] Each foot has one crisp main trail with a faint, wider copy behind it; the two feet retain different animation phases.
+- [ ] Nimble I starts 50% wider than before and short (1.5 blocks long, 0.27 wide).
+- [ ] Nimble II stretches farther and wider (2.7 blocks long, 0.37 wide).
+- [ ] Nimble III is longest and thickest (4.0 blocks long, 0.49 wide).
+- [ ] Promotions and demotions blend the dimensions instead of snapping the trail size.
+- [ ] Viewed from behind, trails angle outward 30 degrees from horizontal, forming a mirrored V.
+- [ ] The trail centers are slightly farther apart (0.40 blocks); both layers clear the floor without clipping or z-fighting.
+- [ ] Airborne and stair sections still follow diagonal changes in foot height.
+- [ ] The texture follows actual turns with sharper straight sections, without fluid spline curling or camera-facing rotation.
+- [ ] Running, jumping, and normal falling all leave sprite trails.
+- [ ] Jump trails use short, deliberately angular sections rather than a smoothly curling fluid arc.
+- [ ] Takeoff, the jump apex, and landing stay connected without an abrupt cutoff.
+- [ ] Height changes are joined by visible diagonal sections rather than disconnected horizontal slices.
+- [ ] Jumping straight up still renders a strip instead of collapsing its width.
+- [ ] Older corners remain stable while new sections are added; they do not slide or wobble each tick.
+- [ ] The main trail is brighter and slightly more opaque, with a faint 1.4x-width underlay. Both progressively fade to transparent at the far tip.
+- [ ] The shorter trails keep the original widths and transparent sprite background.
+- [ ] Stopping ends emission and remaining sections fade within about 1.0–1.4 seconds.
+- [ ] Turning in place does not emit new sections; resuming does not connect across a pause.
+- [ ] Dash, vanilla elytra flight, and dodge cloud form suppress new passive trails.
+- [ ] Looking down in first person shows the ground-facing trails without a billboard blocking the view.
+- [ ] Losing Nimble, death, gene changes, dimension changes, and large teleports clear trail state.
+- [ ] Other players see the correct stage and animation, including when entering viewing range.
+- [ ] Appearance remains stable at different frame rates.
 
 ## Subtle three-bar HUD
 
@@ -97,18 +132,23 @@ movement effects. Dodges are random: test repeated attacks at each stage.
 - [ ] Earning a stage highlights the corresponding bar; losing it removes that highlight.
 - [ ] Promotion/demotion briefly flashes the affected bar.
 - [ ] Empty bars are faint; decay has a muted tint.
-- [ ] The HUD does not overlap the glide meter at your preferred GUI scale.
+- [ ] The HUD sits comfortably at your preferred GUI scale; the old glide meter is absent.
 - [ ] F1 hides the bars.
 
 ## Existing stage feedback
 
-- [ ] Promotion retains the rising breeze/chime and produces a custom backward cloud-smoke burst.
-- [ ] The burst matches the dash cloud renderer rather than vanilla Minecraft cloud particles.
+- [ ] Every Nimble promotion retains the rising breeze/chime and plays the supplied cloudburst sprite once, beside both legs.
+- [ ] I/II/III bursts become successively larger (65%/82.5%/100% of the full size).
+- [ ] All burst stages are 15% larger than before; III reaches about 2.70 blocks long and 1.04 wide per leg.
+- [ ] Promotion smoke uses the original PNG colors with no added cool tint or brightness boost; running trails keep their existing brightness.
+- [ ] Both promotion smoke panels tilt outward 60 degrees into a V, with a wider faint overlay behind the main smoke.
+- [ ] The background is transparent and pixel edges stay crisp, with no neighboring sprite rows showing.
 - [ ] Burst direction follows actual movement, including sideways running; stationary promotion falls back to facing.
-- [ ] The dense pastel plume starts at the feet, moves slowly backward/upward, and remains visible for roughly 1.8–2.2 seconds.
-- [ ] Blue, green, and pink pastel shades match the dash clouds.
-- [ ] Small pulsing white cores have soft colored glows, like the dash core particles.
-- [ ] Clouds spread at slower varied speeds with gentle floating motion and a longer fade; core glows last roughly 1.4–1.8 seconds.
+- [ ] Smoke appears quickly (0.1 seconds), expands backward, and slowly fades out over 2.2 seconds.
+- [ ] The seven visible poses play forward once without looping or abruptly disappearing on the blank final row.
+- [ ] Smoke stays near the promotion position and drifts backward slightly as Nimbus runs onward.
+- [ ] The old procedural promotion puffs/cores are gone; dash clouds still work normally.
+- [ ] Nearby observers see the burst; entering viewing range or refreshing a stage does not falsely replay it.
 - [ ] The old promotion spiral, demotion cloud particles, and passive airborne cloud specks are gone.
 - [ ] Promotion produces a stronger, smoothly easing FOV swell and a brighter, near-white mist overlay.
 - [ ] Higher stages pulse more strongly; the FOV returns smoothly over 0.8 / 1.0 / 1.2 seconds.
@@ -124,7 +164,7 @@ movement effects. Dodges are random: test repeated attacks at each stage.
 - [ ] Cloud form/afterimages never leave the player permanently hidden after a reset.
 - [ ] Large teleports reset momentum instead of charging it.
 - [ ] Resets/reconnects do not trigger a false promotion.
-- [ ] Players have independent momentum, stages, and dodge cooldowns.
+- [ ] Players have independent momentum, stages, and dodge charges.
 - [ ] Nearby players see promotion bursts, the flowing foot-streak trail, dodge cloud form, and hear sounds.
 - [ ] A player entering viewing range sees the current trail without a false promotion burst.
 - [ ] Movement remains responsive without rubber-banding on a server.

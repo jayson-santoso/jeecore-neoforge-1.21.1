@@ -103,11 +103,6 @@ configurations {
     runtimeClasspath.extendsFrom localRuntime
 }
 
-dependencies {
-    // Local Caelus API jar supplies the flight attribute.
-    implementation files("libs/caelus-neoforge-7.0.1+1.21.1.jar")
-}
-
 // Expand mod metadata placeholders from gradle.properties during resource generation.
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [

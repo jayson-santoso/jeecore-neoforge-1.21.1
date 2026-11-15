@@ -12,8 +12,6 @@ public class PlayerGeneData implements INBTSerializable<CompoundTag> {
     // Gene selection and ability state.
     private Gene gene = Gene.NONE;
     private boolean hasChosen = false;
-    private boolean glideToggled = false;
-    private int glideResource = 0;
     private boolean smokeFormActive = false;
     private int smokeResource = MAX_SMOKE_RESOURCE;
     private int smokeCooldownTicks = 0;
@@ -28,7 +26,6 @@ public class PlayerGeneData implements INBTSerializable<CompoundTag> {
     private int overheatBar = 0;
     private boolean overheatPrimaryLocked = false;
     // Resource limits.
-    private static final int MAX_GLIDE_RESOURCE = 300;
     private static final int MAX_SMOKE_RESOURCE = 70;
     private static final int MAX_IGNITION_CHARGE = 100;
     private static final int MAX_IGNITION_TIMER = 100;
@@ -52,8 +49,6 @@ public class PlayerGeneData implements INBTSerializable<CompoundTag> {
     public void copyFrom(PlayerGeneData other) {
         this.gene = other.gene;
         this.hasChosen = other.hasChosen;
-        this.glideToggled = other.glideToggled;
-        this.glideResource = other.glideResource;
         this.smokeFormActive = other.smokeFormActive;
         this.smokeResource = other.smokeResource;
         this.smokeCooldownTicks = other.smokeCooldownTicks;
@@ -73,8 +68,6 @@ public class PlayerGeneData implements INBTSerializable<CompoundTag> {
      * flag.
      */
     public void resetAbilityState() {
-        this.glideToggled = false;
-        this.glideResource = 0;
         this.smokeFormActive = false;
         this.smokeResource = MAX_SMOKE_RESOURCE;
         this.smokeCooldownTicks = 0;
@@ -99,8 +92,6 @@ public class PlayerGeneData implements INBTSerializable<CompoundTag> {
     public void reset() {
         this.gene = Gene.NONE;
         this.hasChosen = false;
-        this.glideToggled = false;
-        this.glideResource = 0;
         this.smokeFormActive = false;
         this.smokeResource = MAX_SMOKE_RESOURCE;
         this.smokeCooldownTicks = 0;
@@ -111,31 +102,6 @@ public class PlayerGeneData implements INBTSerializable<CompoundTag> {
         this.ignitionQuickTimeActive = false;
         this.ignitionQuickTimeZoneStart = 42;
         this.ignitionQuickTimeZoneWidth = 12;
-    }
-
-    // Nimbus glide state.
-    public boolean isGlideToggled() {
-        return glideToggled;
-    }
-
-    public void setGlideToggled(boolean toggled) {
-        this.glideToggled = toggled;
-    }
-
-    public int getGlideResource() {
-        return glideResource;
-    }
-
-    public void setGlideResource(int resource) {
-        this.glideResource = Math.max(0, Math.min(resource, MAX_GLIDE_RESOURCE));
-    }
-
-    public void addGlideResource(int amount) {
-        setGlideResource(glideResource + amount);
-    }
-
-    public int getMaxGlideResource() {
-        return MAX_GLIDE_RESOURCE;
     }
 
     // Infernal smoke state.
@@ -265,8 +231,6 @@ public class PlayerGeneData implements INBTSerializable<CompoundTag> {
         CompoundTag tag = new CompoundTag();
         tag.putString("gene", gene.getSerializedName());
         tag.putBoolean("hasChosen", hasChosen);
-        tag.putBoolean("glideToggled", glideToggled);
-        tag.putInt("glideResource", glideResource);
         tag.putBoolean("smokeFormActive", smokeFormActive);
         tag.putInt("smokeResource", smokeResource);
         tag.putInt("smokeCooldownTicks", smokeCooldownTicks);
@@ -286,8 +250,6 @@ public class PlayerGeneData implements INBTSerializable<CompoundTag> {
     public void deserializeNBT(HolderLookup.Provider provider, CompoundTag tag) {
         this.gene = Gene.fromString(tag.getString("gene"));
         this.hasChosen = tag.getBoolean("hasChosen");
-        this.glideToggled = tag.getBoolean("glideToggled");
-        setGlideResource(tag.getInt("glideResource"));
         this.smokeFormActive = tag.getBoolean("smokeFormActive");
         setSmokeResource(tag.contains("smokeResource") ? tag.getInt("smokeResource") : MAX_SMOKE_RESOURCE);
         setSmokeCooldownTicks(tag.getInt("smokeCooldownTicks"));

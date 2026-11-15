@@ -1,0 +1,4 @@
+Mode: built-in imagegen, reference-guided generation.
+Reference: the original two-panel Nimbus concept image from this chat.
+Prompt: Produce eight vertically stacked frames of the same original white and pale-icy-blue pixel wind ribbon. Anchor the thick root at the left; retain a long chunky body and a thin curling tail at the right. Use small per-frame ripple variations with hard square pixels. No labels, player, scenery, glow, or background. Transparent canvas.
+Final export: 8 unique registered 128x16 frames, three opaque palette colors plus alpha-zero background. Technical export removes stray low-alpha pixels, preserves hard texels, and supplies a forward/backward playback order to avoid a reset jump.

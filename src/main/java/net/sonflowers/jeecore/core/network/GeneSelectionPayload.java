@@ -17,7 +17,6 @@ import net.sonflowers.jeecore.core.ability.AbilityHandler;
 import net.sonflowers.jeecore.gene.infernal.server.InfernalChargeManager;
 import net.sonflowers.jeecore.gene.infernal.server.InfernalPassiveHandler;
 import net.sonflowers.jeecore.gene.infernal.server.InfernalSmokeManager;
-import net.sonflowers.jeecore.gene.nimbus.server.NimbusGlideManager;
 import net.sonflowers.jeecore.gene.nimbus.server.NimbusPassiveHandler;
 import net.sonflowers.jeecore.gene.terragolem.server.TerragolemOverheatManager;
 import net.sonflowers.jeecore.gene.terragolem.server.TerragolemPassiveHandler;
@@ -48,7 +47,6 @@ public record GeneSelectionPayload(String geneId) implements CustomPacketPayload
             if (context.player() instanceof ServerPlayer player) {
                 Gene gene = Gene.fromString(payload.geneId);
                 if (gene != Gene.NONE) {
-                    NimbusGlideManager.removeGlideAttribute(player);
                     NimbusPassiveHandler.removePassiveAttributes(player);
                     InfernalPassiveHandler.removePassiveAttributes(player);
                     TerragolemPassiveHandler.removePassiveAttributes(player);
@@ -65,10 +63,6 @@ public record GeneSelectionPayload(String geneId) implements CustomPacketPayload
                     // Apply passive attributes for Nimbus.
                     if (gene == Gene.NIMBUS) {
                         NimbusPassiveHandler.applyPassiveAttributes(player);
-                        // Initialize glide resource to full.
-                        NimbusGlideManager.setGlideResource(player, 300);
-                        // Apply Caelus flight attribute.
-                        NimbusGlideManager.applyGlideAttribute(player);
                     } else if (gene == Gene.INFERNAL) {
                         InfernalPassiveHandler.applyPassiveAttributes(player);
                         InfernalSmokeManager.sync(player);

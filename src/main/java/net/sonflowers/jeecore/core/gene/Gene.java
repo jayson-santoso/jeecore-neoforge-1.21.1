@@ -50,7 +50,7 @@ public enum Gene implements StringRepresentable {
 
     public int getPrimaryCooldown() {
         return switch (this) {
-            case NIMBUS -> 200; // 10 seconds for boost when gliding, 8 seconds for dash.
+            case NIMBUS -> 200; // 10-second dash cooldown.
             case DRYAD -> 600; // 30 seconds for elixir toss.
             case TERRAGOLEM -> 100; // 5 seconds, matching the ready-up window.
             default -> 0;

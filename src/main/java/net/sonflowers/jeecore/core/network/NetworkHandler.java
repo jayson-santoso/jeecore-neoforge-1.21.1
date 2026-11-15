@@ -19,9 +19,6 @@ import net.sonflowers.jeecore.gene.infernal.network.SmokeFormStatePayload;
 import net.sonflowers.jeecore.gene.infernal.network.SmokePayload;
 import net.sonflowers.jeecore.gene.nimbus.network.CloudPayload;
 import net.sonflowers.jeecore.gene.nimbus.network.DashEffectPayload;
-import net.sonflowers.jeecore.gene.nimbus.network.GlideBoostEffectPayload;
-import net.sonflowers.jeecore.gene.nimbus.network.GlideStatePayload;
-import net.sonflowers.jeecore.gene.nimbus.network.ToggleGlidePayload;
 import net.sonflowers.jeecore.gene.nimbus.network.WindPayload;
 import net.sonflowers.jeecore.gene.terragolem.network.TerragolemBeamBurstPayload;
 import net.sonflowers.jeecore.gene.terragolem.network.TerragolemBigStunPayload;
@@ -46,13 +43,10 @@ public class NetworkHandler {
     }
 
     private static void onRegisterPayloads(RegisterPayloadHandlersEvent event) {
-        PayloadRegistrar registrar = event.registrar("1");
+        PayloadRegistrar registrar = event.registrar("2");
         registrar.playToClient(net.sonflowers.jeecore.gene.nimbus.network.WindrunnerVisualPayload.TYPE,
                 net.sonflowers.jeecore.gene.nimbus.network.WindrunnerVisualPayload.STREAM_CODEC,
                 net.sonflowers.jeecore.gene.nimbus.network.WindrunnerVisualPayload::handle);
-        registrar.playToServer(net.sonflowers.jeecore.gene.nimbus.network.WindrunnerAttackPayload.TYPE,
-                net.sonflowers.jeecore.gene.nimbus.network.WindrunnerAttackPayload.STREAM_CODEC,
-                net.sonflowers.jeecore.gene.nimbus.network.WindrunnerAttackPayload::handle);
         registrar.playToClient(net.sonflowers.jeecore.gene.nimbus.network.NimbusDodgePayload.TYPE,
                 net.sonflowers.jeecore.gene.nimbus.network.NimbusDodgePayload.STREAM_CODEC,
                 net.sonflowers.jeecore.gene.nimbus.network.NimbusDodgePayload::handle);
@@ -176,18 +170,6 @@ public class NetworkHandler {
                 DashEffectPayload::handle
         );
 
-        registrar.playToServer(
-                ToggleGlidePayload.TYPE,
-                ToggleGlidePayload.STREAM_CODEC,
-                ToggleGlidePayload::handle
-        );
-
-        registrar.playToClient(
-                GlideStatePayload.TYPE,
-                GlideStatePayload.STREAM_CODEC,
-                GlideStatePayload::handle
-        );
-
         registrar.playToClient(
                 CooldownStatePayload.TYPE,
                 CooldownStatePayload.STREAM_CODEC,
@@ -198,12 +180,6 @@ public class NetworkHandler {
                 RequestCooldownSyncPayload.TYPE,
                 RequestCooldownSyncPayload.STREAM_CODEC,
                 RequestCooldownSyncPayload::handle
-        );
-
-        registrar.playToClient(
-                GlideBoostEffectPayload.TYPE,
-                GlideBoostEffectPayload.STREAM_CODEC,
-                GlideBoostEffectPayload::handle
         );
 
         registrar.playToClient(

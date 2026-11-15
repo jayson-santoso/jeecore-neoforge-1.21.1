@@ -9,10 +9,8 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.bus.api.EventPriority;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.level.ExplosionKnockbackEvent;
 import net.sonflowers.jeecore.gene.nimbus.WindrunnerMomentum.Movement;
 import net.sonflowers.jeecore.gene.nimbus.network.NimbusDodgePayload;
@@ -53,7 +51,7 @@ public final class NimbusWindrunnerManager {
             double distance = position.subtract(state.previous).horizontalDistance();
             Movement movement = excluded(player) ? Movement.EXCLUDED
                     : player.isShiftKeyDown() ? Movement.SNEAK
-                    : distance < .03 || player.horizontalCollision ? Movement.IDLE
+                    : distance < .03 ? Movement.IDLE
                     : player.isSprinting() ? Movement.SPRINT : Movement.WALK;
             state.rules.tick(now, movement);
         }
@@ -131,14 +129,24 @@ public final class NimbusWindrunnerManager {
                 || !(event.getSource().getEntity() instanceof LivingEntity attacker) || attacker == p) return;
         WindrunnerState state = p.getData(GeneDataAttachment.WINDRUNNER);
         long now = p.level().getGameTime();
-        if (!state.rules.tryDodge(now, p.getRandom().nextFloat())) return;
+        int before = state.rules.stage();
+        boolean protectedHit = state.rules.dodging(now);
+        if (!protectedHit && !state.rules.tryDodge(now)) return;
         event.setCanceled(true);
+        // Every blocked explosion needs knockback suppression, including free hits inside the window.
         state.lastDodgedSource = event.getSource();
         state.lastDodgeTick = now;
+        // Do not spend another charge, replay effects, or extend protection for follow-up hits.
+        if (protectedHit) return;
+        int after = state.rules.stage();
+        updateEffect(p, after);
+        feedback(p, after, false);
+        PacketDistributor.sendToPlayer(p, new WindrunnerStatePayload(state.rules.momentum(), after,
+                state.rules.decaying(), Integer.compare(after, before)));
         Vec3 motion = p.getDeltaMovement().multiply(1, 0, 1);
         if (motion.lengthSqr() < .001) motion = p.getLookAngle().multiply(1, 0, 1).scale(.15);
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(p,
-                new NimbusDodgePayload(p.getUUID(), p.position(), motion, p.yBodyRot, true));
+                new NimbusDodgePayload(p.getUUID(), p.position(), motion, p.getYRot(), true));
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.BREEZE_DEFLECT,
                 SoundSource.PLAYERS, .75f, 1.25f);
         p.serverLevel().playSound(null, p.blockPosition(), SoundEvents.BREEZE_SLIDE,
@@ -159,7 +167,7 @@ public final class NimbusWindrunnerManager {
         }
     }
 
-    public static void attack(Player player) {
+    private static void attack(Player player) {
         if (!(player instanceof ServerPlayer p) || GeneHelper.getPlayerGene(p) != Gene.NIMBUS) return;
         var state = p.getData(GeneDataAttachment.WINDRUNNER);
         int before = state.rules.stage();
@@ -172,13 +180,11 @@ public final class NimbusWindrunnerManager {
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void attackEntity(AttackEntityEvent event) { attack(event.getEntity()); }
-
-    @SubscribeEvent(priority = EventPriority.LOWEST)
-    public static void projectile(EntityJoinLevelEvent event) {
-        if (!event.getLevel().isClientSide && !event.loadedFromDisk()
-                && event.getEntity() instanceof Projectile projectile
-                && projectile.getOwner() instanceof Player player) attack(player);
+    public static void landedHit(LivingDamageEvent.Post event) {
+        if (event.getNewDamage() > 0 && event.getSource().getEntity() instanceof ServerPlayer attacker
+                && attacker != event.getEntity() && !event.getSource().is(net.minecraft.world.damagesource.DamageTypes.THORNS)) {
+            attack(attacker);
+        }
     }
 
     @SubscribeEvent public static void tracking(PlayerEvent.StartTracking event) {

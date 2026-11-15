@@ -4,7 +4,7 @@ JeeCore is a multiplayer-focused Minecraft 1.21.1 mod built with NeoForge and Ja
 ## Getting started
 
 - Install JDK 21 and use the included Gradle wrapper.
-- Ensure `libs/caelus-neoforge-7.0.1+1.21.1.jar` is available; the build uses this local dependency.
+- Caelus is no longer required. Nimbus uses Windrunner movement, stage-based dodges, dash, and charged Gust.
 - Build: `./gradlew build` (Windows: `.\gradlew.bat build`). The mod jar is written to `build/libs/`.
 - Launch the client on Windows: `./scripts/run-client.ps1`. This launcher handles Scoop cache aliases.
 - Other runs: `./gradlew runClient2` and `./gradlew runServer`.
@@ -20,7 +20,7 @@ src/main/
     gene/
       dryad/               Healing, spores, and root snare
       infernal/            Rage, smoke, and charges
-      nimbus/              Wind, glide, gust, and Windrunner
+      nimbus/              Windrunner, dodges, dash, and charged gust
       terragolem/          Fuel, repair, overheating, impact, and related abilities
     mixin/                 Minecraft hooks; client-only hooks in mixin/client/
   resources/
@@ -34,9 +34,14 @@ docs/
 scripts/                   Client and GameTest launchers
   assets/                  Asset generation tools
 artwork/                   Source artwork, previews, and animation references
-libs/                      Local dependency jars
 runs/                      Local game worlds, settings, and logs (ignored)
 ```
+
+Nimbus no longer includes built-in glide, glide recharge, its resource bar, or glide
+boost. Existing player gene saves remain compatible; obsolete glide data is ignored
+and removed on the next save. Client and server must both use this updated version
+because the removed glide packets change the network protocol. Ordinary elytra
+equipment remains usable.
 
 Inside each gene, `server/` contains server gameplay, `client/` contains rendering
 and input, and `network/` contains its payloads. Other packages such as `effect/`,
